@@ -4,6 +4,8 @@
 # https://github.com/dockerfile/nginx
 #
 
+ADD VERSION
+
 # Pull base image.
 FROM centos:centos7
 
@@ -22,19 +24,23 @@ RUN yum install -y wget openssl sed &&\
     sed -i '1i\
     daemon off;\
     ' /etc/nginx/nginx.conf
-  rm -rf /var/lib/apt/lists/* && \
-  echo "\ndaemon off;" >> /etc/nginx/nginx.conf && \
-  chown -R www-data:www-data /var/lib/nginx
-
+    
 # Define mountable directories.
 VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/var/log/nginx", "/var/www/html"]
 
+#Copy
+
 # Define working directory.
-WORKDIR /etc/nginx
+WORKDIR /usr/share/nginx/html
+
+#Copy website content from host to volume in working directory
+RUN -p 8080:80 -d -v /home/netsys/Desktop/lab3/nginxfiles/html:/usr/share/nginx/html
+
+#Attach
 
 # Define default command.
 CMD ["nginx"]
 
 # Expose ports.
-EXPOSE 80
+EXPOSE 8080
 EXPOSE 443
