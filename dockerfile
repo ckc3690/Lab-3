@@ -1,8 +1,4 @@
-#
-# Nginx Dockerfile
-#
-# https://github.com/dockerfile/nginx
-#
+#Dockerfile to install a webserver using Nginx
 
 ADD VERSION
 
@@ -28,17 +24,21 @@ RUN yum install -y wget openssl sed &&\
 # Define mountable directories.
 VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/var/log/nginx", "/var/www/html"]
 
-#Copy
-
-# Define working directory.
+# set working directory.
 WORKDIR /usr/share/nginx/html
 
-#Copy website content from host to volume in working directory
-RUN -p 8080:80 -d -v /home/netsys/Desktop/lab3/nginxfiles/html:/usr/share/nginx/html
+#Copy static content from running container to new instance
+FROM %%explorecali:0.1%%
+COPY /usr/share/nginx/html /usr/share/nginx/html
 
-#Attach
+#Copy config file from running container
+FROM %%explorecali:0.1%%
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Define default command.
+#Set folder permissions 
+RUN chmod 755 /usr/share/nginx/html
+
+# Set default command.
 CMD ["nginx"]
 
 # Expose ports.
